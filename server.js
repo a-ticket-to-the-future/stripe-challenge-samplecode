@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+
+
 const PORT = 3001;
 
 //const stripe = require('stripe')('sk_test_51OJs18DeAQc450QQx1df7rQv298LhrEKKTiTXXL5pzC5Wx4HjTQvA7dt3BiD74S5GMBco6bmk0yxc3T1nu8fW47600DijjICiS'
@@ -9,6 +11,10 @@ const stripe = require("stripe")('sk_test_51OJs18DeAQc450QQx1df7rQv298LhrEKKTiTX
 const YOUR_DOMAIN = "http://localhost:3001"
 
 app.use(express.static("pages"));
+
+app.use(express.urlencoded({extended: true }));
+app.use(express.json());
+
 
 app.post("/create-checkout-session",async(req,res) => {
     try{
@@ -19,8 +25,8 @@ app.post("/create-checkout-session",async(req,res) => {
         // console.log(prices);
 
         console.log(prices)
-        console.log(prices.data[0])
-        console.log(prices.data[0].id);
+        // console.log(prices.data[0])
+        // console.log(prices.data[0].id);
 
         const session = await stripe.checkout.sessions.create({
             //セッションはお客様がどういう状態なのか。といった意味
@@ -45,7 +51,7 @@ app.post("/create-checkout-session",async(req,res) => {
         
 
         res.redirect(303,session.url);
-        console.log(session.url);
+        // console.log(session.url);
 
     }catch(error) {
         console.log(error);
@@ -54,6 +60,31 @@ app.post("/create-checkout-session",async(req,res) => {
     // console.log(session)
     //     console.log(session.data[0])
 })
+
+
+app.post('/create-portal-session', async (req,res) => {
+    const { session_id } = req.body;
+    const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
+
+    const returnUrl = YOUR_DOMAIN;
+
+    const portalSession = await stripe.billingPortal.sessions.create({
+            customer : checkoutSession.customer,
+            return_url : returnUrl,
+    });
+
+
+
+    
+
+    res.redirect(303,portalSession.url);
+
+    // console.log(req.body);
+    // console.log({session_id});
+    // console.log(checkoutSession);
+    // console.log(portalSession);
+
+});
 
 
 
