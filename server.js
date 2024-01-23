@@ -79,10 +79,10 @@ app.post('/create-portal-session', async (req,res) => {
 
     res.redirect(303,portalSession.url);
 
-    // console.log(req.body);
-    // console.log({session_id});
-    // console.log(checkoutSession);
-    // console.log(portalSession);
+    console.log(req.body);
+    console.log({session_id});
+    console.log(checkoutSession);
+    console.log(portalSession);
 
 });
 
